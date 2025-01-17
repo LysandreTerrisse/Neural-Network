@@ -1,5 +1,4 @@
-import numpy as np
-import gzip
+import gzip, numpy as np
 
 def get_data(path_images, path_labels, n_elements):
 	with gzip.open(path_images, "rb") as fd1, gzip.open(path_labels, "rb") as fd2:
@@ -24,18 +23,15 @@ class Neural_network:
 		a[0] = image
 		for i in range(1, len(self.shape)):
 			a[i] = sigmoid(np.dot(W[i], a[i-1]) + b[i])
-			
 		return a[-1]
 	
 	def backpropagation(self, y):
 		W, b, a = self.W, self.b, self.a
 		gradient = Neural_network(self.shape)
-		
 		for i in range(len(self.shape)-1, 0, -1):
 			gradient.a[i] = (a[i] - y) / (a[i] * (1 - a[i]) + 1e-5) if i==len(self.shape)-1 else np.dot(W[i+1].T, gradient.b[i+1])
 			gradient.b[i] = gradient.a[i] * a[i] * (1 - a[i])
 			gradient.W[i] = np.outer(gradient.b[i], a[i-1])
-			
 		return gradient
 	
 	def gradient_descent(self, gradients, learning_rate):
@@ -46,7 +42,6 @@ def learn(training_data, test_data, shape, learning_rate, minibatch_size):
 	neural_network = Neural_network(shape, True)
 	minibatches = [training_data[i:i+minibatch_size] for i in range(0, len(training_data), minibatch_size)]
 	epoch = 0
-	
 	while True:
 		n_right_train = 0
 		for minibatch in minibatches:
@@ -55,9 +50,7 @@ def learn(training_data, test_data, shape, learning_rate, minibatch_size):
 				n_right_train += np.argmax(neural_network.feedforward(image))==np.argmax(label)
 				gradients.append(neural_network.backpropagation(label))
 			neural_network.gradient_descent(gradients, learning_rate)
-		
 		n_right_test = sum(np.argmax(neural_network.feedforward(image))==np.argmax(label) for image, label in test_data)
-		
 		epoch += 1
 		print(f"Epoch {epoch}: {n_right_train}/{len(training_data)} {n_right_test}/{len(test_data)}")
 
