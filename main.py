@@ -39,8 +39,8 @@ class Neural_network:
 		return gradient
 	
 	def gradient_descent(self, gradients, learning_rate):
-		self.W -= sum([gradient.W for gradient in gradients]) * (learning_rate/len(gradients))
-		self.b -= sum([gradient.b for gradient in gradients]) * (learning_rate/len(gradients))
+		self.W -= sum(gradient.W for gradient in gradients) * (learning_rate/len(gradients))
+		self.b -= sum(gradient.b for gradient in gradients) * (learning_rate/len(gradients))
 
 def learn(training_data, test_data, shape, learning_rate, minibatch_size):
 	neural_network = Neural_network(shape, True)
@@ -56,7 +56,7 @@ def learn(training_data, test_data, shape, learning_rate, minibatch_size):
 				gradients.append(neural_network.backpropagation(label))
 			neural_network.gradient_descent(gradients, learning_rate)
 		
-		n_right_test = sum([np.argmax(neural_network.feedforward(image))==np.argmax(label) for image, label in test_data])
+		n_right_test = sum(np.argmax(neural_network.feedforward(image))==np.argmax(label) for image, label in test_data)
 		
 		epoch += 1
 		print(f"Epoch {epoch}: {n_right_train}/{len(training_data)} {n_right_test}/{len(test_data)}")
